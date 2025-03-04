@@ -1,0 +1,24 @@
+PS C:\xampp2\htdocs\Laravel\2025\laravel-react-fullstack\react> npm run dev
+http://localhost:3000/signup for react
+
+PS C:\xampp2\htdocs\Laravel\2025\laravel-react-fullstack> php artisan serve
+http://127.0.0.1:8000/ for laravel 
+
+use axios for hhtp request
+npm install -S axios
+npm run dev
+
+componenets for layout
+context
+views for main pages
+main.jsx for routers
+
+created .env.example
+
+extension for click on function
+
+
+php  artisan make:controller Api/AuthController 
+php artisan make:request LoginReques
+
+
