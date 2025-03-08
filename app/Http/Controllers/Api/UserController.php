@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Http\Resources\UserResource;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
@@ -16,8 +16,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        return UserResource::collection(
-            User::query()->orderBy('id','desc')->paginate()
+        return UserResource::collection( 
+            User::query()->orderBy('id','desc')->paginate(10)
         );
     }
 
@@ -26,15 +26,10 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        //
         $data = $request->validated();
-        $data['password']  = bcrypt($data['password']);
-        $user = User::create($data);
-
-        return response(new UserResource($user),201);
-
-
-
+        $data['password'] = bcrypt($data['password']);
+        $user = User::create($data); // Fix: Store the created user in $user
+        return response(new UserResource($user), 201);
     }
 
     /**
@@ -50,10 +45,11 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        $data = $request->validated();
+        $data = $request->validated(); // Fix: Define $data before using it
         if(isset($data['password'])){
             $data['password'] = bcrypt($data['password']);
         }
+
         $user->update($data);
 
         return new UserResource($user);
@@ -65,6 +61,7 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
+
         return response("",204);
     }
 }
