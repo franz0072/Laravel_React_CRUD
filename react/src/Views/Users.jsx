@@ -1,27 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import axiosClient from "../axios-client"; // Import axios client
 import { Link } from "react-router-dom";
+import { useStateContext } from "../contexts/contextprovider"; // Correct path
+
 
 const Users = () => {
     const [users, setUsers] = useState([]); // Place state inside the component
     const [loading, setLoading] = useState(false);
+    const { setNotification } = useStateContext(); // Use notification context
+
 
     useEffect(() => {
         getUsers();
     }, []);
 
+    const onDelete = (u) => {
+        if (!window.confirm("Are you sure want to delete this user?")) {
+            return;
+        }
 
-const onDelete = (u) => {
-    if (!window.confirm("Are you sure want to delete this user?")) {
-        return
-    }
-
-    axiosClient.delete(`/users/${u.id}`)
-        .then(() => {
+        axiosClient.delete(`/users/${u.id}`).then(() => {
             //TODO show notification
-            getUsers()
-        })
-}
+            setNotification("User was successfully Deleted")
+            getUsers();
+        });
+    };
 
     const getUsers = () => {
         setLoading(true);
@@ -65,21 +68,42 @@ const onDelete = (u) => {
                             <th>ACTIONS</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {users.map(u => (
-                            <tr key={u.id}>
-                                <td>{u.id}</td>
-                                <td>{u.name}</td>
-                                <td>{u.email}</td>
-                                <td>{u.created_at}</td>
-                                <td>
-                                    <Link className="btn-edit" to={`/users/${u.id}`}>Edit</Link>
-                                    &nbsp;
-                                    <button  onClick={ev => onDelete(u)}className="btn-delete">Delete</button>
+                    {loading && (
+                        <tbody>
+                            <tr>
+                                <td colspan="5" className="text-center">
+                                    Loading...
                                 </td>
                             </tr>
-                        ))}
-                    </tbody>
+                        </tbody>
+                    )}
+                    {!loading && (
+                        <tbody>
+                            {users.map((u) => (
+                                <tr key={u.id}>
+                                    <td>{u.id}</td>
+                                    <td>{u.name}</td>
+                                    <td>{u.email}</td>
+                                    <td>{u.created_at}</td>
+                                    <td>
+                                        <Link
+                                            className="btn-edit"
+                                            to={`/users/${u.id}`}
+                                        >
+                                            Edit
+                                        </Link>
+                                        &nbsp;
+                                        <button
+                                            onClick={(ev) => onDelete(u)}
+                                            className="btn-delete"
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    )}
                 </table>
             </div>
         </div>
